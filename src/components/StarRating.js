@@ -11,17 +11,6 @@ const starContainerStyle = {
   display: "flex",
 };
 
-function Test() {
-  const [movieRating, setMovieRating] = useState(0);
-
-  return (
-    <div>
-      <StarRating color="blue" maxRating={10} onSetRating={setMovieRating} />
-      <p>This movie was rated {movieRating} stars</p>
-    </div>
-  );
-}
-
 function StarRating({
   maxRating = 5,
   color = "#fcc419",
@@ -52,10 +41,10 @@ function StarRating({
         {Array.from({ length: maxRating }, (_, i) => (
           <Star
             key={i}
+            full={tempRating ? tempRating >= i + 1 : rating >= i + 1}
             onRate={() => handleRating(i + 1)}
             onHoverIn={() => setTempRating(i + 1)}
             onHoverOut={() => setTempRating(0)}
-            full={tempRating ? tempRating >= i + 1 : rating >= i + 1}
             color={color}
             size={size}
           />

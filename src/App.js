@@ -1,4 +1,4 @@
-import { Children, useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Main from "./components/Main";
 import Search from "./components/Search";
@@ -56,9 +56,27 @@ const tempWatchedData = [
   },
 ];
 
+const KEY = "5832d2b8";
+
 export default function App() {
+  //Important How to not fetch data
+  // const [movies, setMovies] = useState([]);
+  // const [watched, setWatched] = useState(tempWatchedData);
+
+  // fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
+  //   .then((res) => res.json())
+  //   .then((data) => setMovies(data.Search));
+
+  //Important Proper way to make an API call
   const [movies, setMovies] = useState(tempMovieData);
-  const [watched, setWatched] = useState(tempWatchedData);
+  const [watched, setWatched] = useState([]);
+
+  useEffect(function () {
+    fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
+      .then((res) => res.json())
+      .then((data) => setMovies(data.Search));
+  }, []);
+
   return (
     <>
       <Navbar>
