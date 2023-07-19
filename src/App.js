@@ -10,6 +10,7 @@ import WatchedMovieList from "./components/WatchedMovieList";
 import MovieList from "./components/MovieList";
 import Loader from "./components/Loader";
 import ErrorMessage from "./components/ErrorMessage";
+import MovieDetails from "./components/MovieDetails";
 
 const tempMovieData = [
   {
@@ -68,39 +69,76 @@ export default function App() {
   // fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
   //   .then((res) => res.json())
   //   .then((data) => setMovies(data.Search));
-
-  //Important Proper way to make an API call
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const query = "ssset";
   const [error, setError] = useState("");
-  useEffect(function () {
-    async function fetchMovies() {
-      try {
-        setIsLoading(true);
-        const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
-        );
-        if (!res.ok)
-          throw new Error("Something went wrong with fetching movies");
-        const data = await res.json();
-        if (data.Response === "False") throw new Error("Movie not found");
-        setMovies(data.Search);
-      } catch (err) {
-        console.log(err.message);
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
+  const [query, setQuery] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
+
+  // useEffect(function () {
+  //   console.log("After initial render");
+  // }, []);
+
+  // useEffect(function () {
+  //   console.log("After every render");
+  // });
+
+  // console.log("During render");
+
+  // //Important This effect will render when query is changed
+  // useEffect(
+  //   function () {
+  //     console.log("After every render");
+  //   },
+  //   [query]
+  // );
+
+  function handleSelectedMovie(id) {
+    setSelectedId((selectedId) => (id === selectedId ? null : id));
+  }
+
+  function handleCloseMovie() {
+    setSelectedId(null);
+  }
+
+  //Important Proper way to make an API call
+  useEffect(
+    function () {
+      async function fetchMovies() {
+        try {
+          setIsLoading(true);
+          setError("");
+          const res = await fetch(
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+          );
+          if (!res.ok)
+            throw new Error("Something went wrong with fetching movies");
+          const data = await res.json();
+          if (data.Response === "False") throw new Error("Movie not found");
+          setMovies(data.Search);
+          console.log(data.Search);
+        } catch (err) {
+          console.log(err.message);
+          setError(err.message);
+        } finally {
+          setIsLoading(false);
+        }
       }
-    }
-    fetchMovies();
-  }, []);
+      if (query.length < 3) {
+        setMovies([]);
+        setError("");
+        return;
+      }
+      fetchMovies();
+    },
+    [query]
+  );
 
   return (
     <>
       <Navbar>
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </Navbar>
 
@@ -108,12 +146,23 @@ export default function App() {
         {/* <Box>{isLoading ? <Loader /> : <MovieList movies={movies} />}</Box> */}
         <Box>
           {isLoading && <Loader />}
-          {!isLoading && !error && <MovieList movies={movies} />}
+          {!isLoading && !error && (
+            <MovieList movies={movies} onSelectMovie={handleSelectedMovie} />
+          )}
           {error && <ErrorMessage message={error} />}
         </Box>
         <Box>
-          <WatchedSummary watched={watched} />
-          <WatchedMovieList watched={watched} />
+          {selectedId ? (
+            <MovieDetails
+              selectedId={selectedId}
+              onCloseMovie={handleCloseMovie}
+            />
+          ) : (
+            <>
+              <WatchedSummary watched={watched} />
+              <WatchedMovieList watched={watched} />
+            </>
+          )}
         </Box>
       </Main>
     </>
