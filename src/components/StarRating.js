@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Star from "./Star";
 
 const containerStyle = {
@@ -31,12 +31,12 @@ function StarRating({
   const textStyle = {
     lineHeight: "1",
     margin: "0",
-    color: color,
+    color,
     fontSize: `${size / 1.5}px`,
   };
 
   return (
-    <div style={containerStyle}>
+    <div style={containerStyle} className={className}>
       <div style={starContainerStyle}>
         {Array.from({ length: maxRating }, (_, i) => (
           <Star

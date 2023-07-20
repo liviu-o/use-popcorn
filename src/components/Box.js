@@ -1,6 +1,5 @@
 import React from "react";
 import { useState } from "react";
-import MovieList from "./MovieList";
 
 function Box({ children }) {
   const [isOpen, setIsOpen] = useState(true);
@@ -10,6 +9,7 @@ function Box({ children }) {
       <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
         {isOpen ? "–" : "+"}
       </button>
+
       {isOpen && children}
     </div>
   );
