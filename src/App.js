@@ -23,11 +23,18 @@ export default function App() {
   //   .then((res) => res.json())
   //   .then((data) => setMovies(data.Search));
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  // const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(function () {
+    const storedValue = localStorage.getItem("watched");
+    return JSON.parse(storedValue);
+  });
+
+  //Important Do not call useState like this
+  // useState(localStorage.getItem("watched"))
 
   // useEffect(function () {
   //   console.log("After initial render");
@@ -57,11 +64,21 @@ export default function App() {
 
   function handleAddWatched(movie) {
     setWatched([...watched, movie]);
+
+    //Important This aproach requres the below line to be added to the handleDeleteWatched in wsed instead of useEffect hook
+    // localStorage.setItem("watched", JSON.stringify([...watched, movie]));
   }
 
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
+
+  useEffect(
+    function () {
+      localStorage.setItem("watched", JSON.stringify(watched));
+    },
+    [watched]
+  );
 
   //Important Proper way to make an API call
   useEffect(
