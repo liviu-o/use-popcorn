@@ -61,6 +61,12 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     function () {
       if (!title) return;
       document.title = `Movie | ${title}`;
+
+      return function () {
+        document.title = "usePopcorn";
+        //Important Closure - will remember the variable in the future, even after the component has been unmounted
+        console.log(`Clean up effect for movie ${title}`);
+      };
     },
     [title]
   );
